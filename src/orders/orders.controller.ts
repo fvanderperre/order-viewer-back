@@ -1,6 +1,5 @@
 
 import { Body, Controller, Param, Post, Put } from '@nestjs/common'
-import { Observable } from 'rxjs'
 import { OrderDTO } from './orders.model'
 import { OrdersService } from './orders.service'
 
@@ -11,7 +10,7 @@ export class OrdersController {
     @Post()
     postOrders(
         @Body() orders: Array<OrderDTO>
-    ): Observable<Array<OrderDTO>> {
+    ): Promise<any> {
         return this.ordersService.postOrders(orders)
     }
 
@@ -19,7 +18,7 @@ export class OrdersController {
     updateOrder(
         @Param('orderId') orderId: string,
         @Body() { title, bookingDate }: OrderDTO
-    ): Observable<OrderDTO> {
+    ): Promise<any> {
         return this.ordersService.updateOrder(orderId, title, bookingDate)
     }
 }

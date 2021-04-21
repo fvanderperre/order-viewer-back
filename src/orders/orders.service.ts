@@ -1,24 +1,22 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common'
-import { Observable, of } from 'rxjs'
-import { notExistingOrderUUID } from './mocks/orders.mock'
+import { BadRequestException, Injectable } from '@nestjs/common'
 import { isOrderValid, OrderDTO } from './orders.model'
+import { OrderRepository } from './orders.repository'
 
 @Injectable()
 export class OrdersService {
+    constructor(private orderRepository: OrderRepository) { }
 
-    postOrders = (orders: Array<OrderDTO>): Observable<Array<OrderDTO>> => {
+
+    postOrders = (orders: Array<OrderDTO>): Promise<any> => {
         if (orders?.every((order) => isOrderValid(order))) {
-            return of(orders)
+            return this.orderRepository.postOrders(orders)
         }
         throw new BadRequestException()
     }
 
-    updateOrder(orderId: string, title: string, bookingDate: number): Observable<OrderDTO> {
+    updateOrder(orderId: string, title: string, bookingDate: number): Promise<any> {
         if (orderId && title && bookingDate) {
-            if (orderId === notExistingOrderUUID()) {
-                throw new NotFoundException()
-            }
-            return of({ title, bookingDate })
+            return this.orderRepository.updateOrder(orderId, title, bookingDate)
         }
         throw new BadRequestException()
     }

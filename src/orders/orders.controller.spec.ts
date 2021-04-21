@@ -1,55 +1,71 @@
 import { BadRequestException, NotFoundException } from "@nestjs/common"
 import { Test, TestingModule } from "@nestjs/testing"
-import { badOrdersMock, bookingDateMock, existingOrderUUID, notExistingOrderUUID, ordersMock, titleMock } from "./mocks/orders.mock"
+import { OrderRepositoryMock } from "./mocks/order.repository.mock"
+import {
+  invalidOrdersMock,
+  bookingDateMock,
+  existingOrderUID,
+  notExistingOrderUID,
+  ordersMock,
+  titleMock
+} from "./mocks/orders.mock"
 import { OrdersController } from "./orders.controller"
+import { OrderRepository } from "./orders.repository"
 import { OrdersService } from "./orders.service"
 
 describe('AppController', () => {
   let ordersController: OrdersController
+  let orderRepositoryMock = {
+    postOrders: OrderRepositoryMock.postOrders,
+    updateOrder: OrderRepositoryMock.updateOrder,
+  }
 
   beforeEach(async () => {
     const app: TestingModule = await Test.createTestingModule({
       controllers: [OrdersController],
-      providers: [OrdersService],
-    }).compile()
+      providers: [OrdersService, OrderRepository],
+    })
+      .overrideProvider('OrderRepository')
+      .useValue(orderRepositoryMock)
+      .compile()
 
     ordersController = app.get<OrdersController>(OrdersController)
   })
 
   describe('POST /orders', () => {
-    it('should return the created orders when the request completes', () => {
-      const postValidOrder = () => ordersController.postOrders(ordersMock())
+    it('should complete with no error if the data are valid', () => {
+      const postValidOrders = () => ordersController.postOrders(ordersMock())
 
-      postValidOrder().subscribe((order) => {
-        expect(order).toBeTruthy
+      postValidOrders().then((response) => {
+        expect(response).toBeTruthy
       })
 
     })
 
     it('should throw a Bad Request Exception when called with invalid data', () => {
-      const postBadOrder = () => ordersController.postOrders(badOrdersMock())
+      const postBadOrder = () => ordersController.postOrders(invalidOrdersMock())
 
       expect(postBadOrder).toThrow(BadRequestException)
     })
   })
 
   describe('PUT /order/{orderId}', () => {
-    it('shoud return the updated order when the request completes', () => {
+    it('shoud complete with no error if the data are valid', () => {
       const updateExistingOrder = () => ordersController.updateOrder(
-        existingOrderUUID(),
+        existingOrderUID(),
         {
           title: titleMock(),
           bookingDate: bookingDateMock()
         })
 
-      updateExistingOrder().subscribe((order) => {
+      updateExistingOrder().then((order) => {
         expect(order).toBeTruthy
       })
     })
 
     it('shoud throw a Bad Request Exception when called with invalid data', () => {
       const updateNotExistingOrder = () => ordersController.updateOrder(
-        notExistingOrderUUID(),
+        notExistingOrderUID(),
         {
           title: null,
           bookingDate: bookingDateMock()
@@ -57,12 +73,11 @@ describe('AppController', () => {
       )
 
       expect(updateNotExistingOrder).toThrow(BadRequestException)
-
     })
 
     it('shoud throw a Not Found Exception when trying to update an order that does not exist', () => {
       const updateNotExistingOrder = () => ordersController.updateOrder(
-        notExistingOrderUUID(),
+        notExistingOrderUID(),
         {
           title: titleMock(),
           bookingDate: bookingDateMock()
@@ -70,7 +85,6 @@ describe('AppController', () => {
       )
 
       expect(updateNotExistingOrder).toThrow(NotFoundException)
-
     })
   })
 

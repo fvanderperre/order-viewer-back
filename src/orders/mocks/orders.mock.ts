@@ -38,12 +38,12 @@ export const badOrderMock = (): OrderDTO => {
 
 export const ordersMock = (): Array<OrderDTO> => ([orderMock(), orderMock()])
 
-export const badOrdersMock = (): Array<OrderDTO> => ([orderMock(), badOrderMock()])
+export const invalidOrdersMock = (): Array<OrderDTO> => ([orderMock(), badOrderMock()])
 
 export const titleMock = (): string => 'new Title'
 
 export const bookingDateMock = (): number => NOW
 
-export const existingOrderUUID = (): string => 'existinguuid'
+export const existingOrderUID = (): string => 'existinguid'
 
-export const notExistingOrderUUID = (): string => 'notexistinguuid'
+export const notExistingOrderUID = (): string => 'notexistinguid'
