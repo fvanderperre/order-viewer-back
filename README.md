@@ -7,7 +7,7 @@ Copy the content of serviceAccountKey.json in /src/config/configuration.ts
 $ npm install
 ```
 
-## Running the app
+## Running the app (on port 4200)
 
 ```bash
 # development
@@ -29,3 +29,7 @@ $ npm run test
 # test coverage
 $ npm run test:cov
 ```
+
+## Swagger URL
+
+localhost:4200/swagger
